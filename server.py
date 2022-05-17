@@ -1,16 +1,26 @@
 import socket
 import threading
-
+import sys
+import netifaces as ni
 
 def main():
-    IP = input('Enter IP:')
-    PORT = int(input('Enter Port:'))
+    if len(sys.argv) == 2:
+        try:
+            with open(sys.argv[1], 'r', encoding='utf-8') as f:
+                targets = f.readlines()
+                PORT = int(targets[0].rstrip())
+        except FileNotFoundError:
+            PORT = int(sys.argv[1])
+    else:
+        print('incorrect number arguments')
+        exit(0)
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    IP = ni.ifaddresses('ens33')[ni.AF_INET][0]['addr']
     try:
         server.bind((IP, PORT))
     except:
         print("The server cannot be started")
-    server.listen(5)
+    server.listen(2)
     print(f'[*] Listening on {IP}:{PORT}')
     while True:
         try:
